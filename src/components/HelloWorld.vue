@@ -155,7 +155,6 @@ class MarkerTool {
     this.showPannel = true;
     this.range = range;
     this.selectedText = this.range.toString()
-    console.log('toString', this.range.toString());
     // if (this.state) {
     //   // this.unwrap(range);
     // } else {
@@ -170,6 +169,7 @@ class MarkerTool {
     this.showPannel = false;
     this.range = null;
     this.uniMark = false
+    this.olderNode = null
   }
   // showActions(mark) {
   showActions() {
@@ -183,7 +183,7 @@ class MarkerTool {
     })
     this.picker.addEventListener('click', (e) => {
 
-   
+
       console.log(e.target.dataset.info);
       let [type, order, color] = (e.target.dataset.info).split('-')
       let dom
