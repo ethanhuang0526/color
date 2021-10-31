@@ -17,7 +17,11 @@ function insertAfter(newElement, targetElement) {
     parent.insertBefore(newElement, targetElement.nextSibling);
   }
 }
+function insertBefore(newElement, targetElement) {
+  var parent = targetElement.parentNode;
+  parent.insertBefore(newElement, targetElement);
 
+}
 
 
 defineProps({
@@ -133,14 +137,13 @@ class MarkerTool {
   }
   checkState() {
     console.log('checkState');
-    
+    // const mark = this.api.selection.findParentTag(this.tag);
 
-    const mark = this.api.selection.findParentTag(this.tag);
-
-    this.state = !!mark;
+    // this.state = !!mark;
     console.log('current state', this.state);
     if (this.showPannel) {
-      this.showActions(mark);
+      // this.showActions(mark);
+      this.showActions();
     } else {
       this.hideActions();
     }
@@ -151,32 +154,45 @@ class MarkerTool {
     console.log('surround-parmas', range);
     this.showPannel = true;
     this.range = range;
-    if (this.state) {
-      this.unwrap(range);
-    } else {
-      this.wrap(range);
-    }
+    this.selectedText = this.range.toString()
+    console.log('toString', this.range.toString());
+    // if (this.state) {
+    //   // this.unwrap(range);
+    // } else {
+    //   this.wrap(range);
+    // }
     // this.picker.hidden = false;
     // this.wrap(range);
   }
 
   clear() {
+    console.log('clear');
     this.showPannel = false;
     this.range = null;
+    this.uniMark = false
   }
-  showActions(mark) {
+  // showActions(mark) {
+  showActions() {
+    const mark = this.api.selection.findParentTag(this.tag, this.class);
+    this.state = !!mark;
+
     console.log('showActions');
     this.reset.addEventListener('click', (e) => {
       this.unwrap(this.range)
+
     })
     this.picker.addEventListener('click', (e) => {
+
+   
       console.log(e.target.dataset.info);
       let [type, order, color] = (e.target.dataset.info).split('-')
       let dom
-      if (mark) {
-        dom = mark
+      if (this.uniMark === true) {
+        console.log('相同节点');
+        dom = this.olderNode
       } else {
         dom = this.wrap(this.range)
+        this.olderNode = dom
       }
       if (type === 'text') {
         dom.style.color = color
@@ -188,36 +204,36 @@ class MarkerTool {
   }
   hideActions() {
     console.log('hideActions');
+    //todo 非同一引用
     this.picker.removeEventListener('click', () => { })
     this.reset.removeEventListener('click', () => { })
     this.pannel.hidden = true;
+    // this.mark = null
   }
 
 
   wrap(range) {
-    debugger
-    const selectedText = range.extractContents();
-    const mark = document.createElement(this.tag);
-    mark.classList.add(this.class);
-    // mark.innerText = selectedText.textContent
-    // mark.appendChild(selectedText.textContent);
-    mark.appendChild(selectedText);
-
-    range.insertNode(mark);
-    this.api.selection.expandToTag(mark);
-
-    return mark
+    console.log('wrap');
+    let seletedText = document.createTextNode(this.range.toString())
+    let spanNode = document.createElement(this.tag);
+    spanNode.appendChild(seletedText)
+    spanNode.classList.add(this.class);
+    this.uniMark = true
+    // const mark = spanNode;
+    const selectedFrag = range.extractContents();
+    range.insertNode(spanNode);
+    // this.api.selection.expandToTag(mark);
+    return spanNode
   }
 
   unwrap(range) {
-    debugger
-    const mark = this.api.selection.findParentTag(this.tag, this.class);
-    console.log(mark, this.tag, this.class);
-    const text = range.extractContents();
-    let textNode = document.createTextNode(text)
-    mark.remove();
-    insertAfter(textNode,range.startContainer)
-    range.insertNode(text);
+    // debugger
+    const mark = this.api.selection.findParentTag(this.tag, this.class)
+    console.log(range, { mark });
+    let seletedText = document.createTextNode(this.range.toString())
+    range.extractContents();
+    range.insertNode(seletedText)
+
   }
 
 
