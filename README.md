@@ -1,7 +1,39 @@
-# Vue 3 + Vite
+# inline-color-tool  
+color tool for Editor.js. 
+this tool can change  the fontColor and  backgroundColor.
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+file in /src/color
+### Install via NPM
+Get the package
+```shell
+$ npm i --save-dev editorjs-inline-color
+```
 
-## Recommended IDE Setup
+Include module at your application
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+```javascript
+import ColorTool from 'editorjs-inline-color';
+```
+
+## Usage
+
+Add a new Tool to the `tools` property of the Editor.js initial config.
+
+```javascript
+const editor = EditorJS({
+  tools: {
+      color: {
+        class: ColorTool,
+        inlineToolbar: true,
+      }
+  }
+});
+```
+
+## preview
+You can preview this plugin through the local service
+### steps
+1. clone this repo
+2. npm install
+3. npm run dev 
+

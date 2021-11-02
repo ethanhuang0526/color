@@ -38,7 +38,7 @@ const save = () => {
   });
 }
 
-class MarkerTool {
+class ColorTool {
 
   static get isInline() {
     return true;
@@ -94,11 +94,11 @@ class MarkerTool {
     console.log(2, 'renderActions');
     this.pannel = document.createElement('div');
     this.picker = document.createElement('div');
-    this.picker.classList.add('color-picker')
+    // this.picker.classList.add('color-picker')
     this.picker.innerHTML = this.generateTemplate()
 
     this.reset = document.createElement('div');
-    this.reset.innerHTML = `<button>reset</button>`
+    this.reset.innerHTML = `<div class="button-wrap"> <button class="color_reset">reset</button>`
 
     this.pannel.appendChild(this.picker)
     this.pannel.appendChild(this.reset)
@@ -120,6 +120,7 @@ class MarkerTool {
         </div>`
     })
     let template = `
+    <div class="color-picker-wrap">
      <div class="color-picker">
       <div class="color-picker-title">TextColor</div>
       <div class="text-colors">
@@ -131,6 +132,7 @@ class MarkerTool {
       </div>
       
     </div>
+    <div>
     `
     return template
 
@@ -179,12 +181,12 @@ class MarkerTool {
     console.log('showActions');
     this.reset.addEventListener('click', (e) => {
       this.unwrap(this.range)
-
     })
     this.picker.addEventListener('click', (e) => {
-
-
       console.log(e.target.dataset.info);
+      if (!e.target.dataset.info) {
+        return
+      }
       let [type, order, color] = (e.target.dataset.info).split('-')
       let dom
       if (this.uniMark === true) {
@@ -229,10 +231,35 @@ class MarkerTool {
   unwrap(range) {
     // debugger
     const mark = this.api.selection.findParentTag(this.tag, this.class)
-    console.log(range, { mark });
+    console.log('unwrap', range, { mark });
     let seletedText = document.createTextNode(this.range.toString())
-    range.extractContents();
-    range.insertNode(seletedText)
+    let { startContainer, endContainer, startOffset, endOffset } = range
+    if (endContainer.parentElement === startContainer.parentElement && endContainer.parentElement === mark) {
+      console.log('被包裹的情况');
+      if (endContainer.length == endOffset && startOffset == 0) {
+        range.extractContents();
+        mark && mark.remove()
+        range.insertNode(seletedText)
+      }
+      let clonedSpan = mark.cloneNode()
+      let beforeText = startContainer.textContent.slice(0, startOffset)
+      let afterText = endContainer.textContent.slice(endOffset)
+      console.log(beforeText, afterText);
+      mark.innerText = beforeText
+      clonedSpan.innerText = afterText
+      insertAfter(clonedSpan, mark)
+      insertBefore(seletedText, clonedSpan)
+      range.extractContents();
+    } else {
+
+      range.extractContents();
+      // mark&&mark.remove()
+      range.insertNode(seletedText)
+    }
+
+
+
+
 
   }
 
@@ -257,7 +284,7 @@ onMounted(async () => {
         inlineToolbar: true
       },
       mark: {
-        class: MarkerTool,
+        class: ColorTool,
         inlineToolbar: true
       }
     },
@@ -293,79 +320,6 @@ onMounted(async () => {
 <template>
   <h1 @click="save">inline-tool-bar-task</h1>
   <div id="editorjs"></div>
-  <div style="width:200px">
-    <div class="color-picker">
-      <div class="color-picker-title">TextColor</div>
-      <div class="text-colors">
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-0-#da4039" style="color:#da4039">A</span>
-        </div>
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-1-#db6d00" style="color:#db6d00">A</span>
-        </div>
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-2-#239c15" style="color:#239c15">A</span>
-        </div>
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-3-#00ad92" style="color:#00ad92">A</span>
-        </div>
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-4-#2d61dc" style="color:#2d61dc">A</span>
-        </div>
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-5-#303ac9" style="color:#303ac9">A</span>
-        </div>
-        <div class="text-color-wrapper">
-          <span class="text-color" data-info="text-6-#888e98" style="color:#888e98">A</span>
-        </div>
-      </div>
-      <div class="color-picker-title">BackgroundColor</div>
-      <div class="back-colors">
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-0-#fde2e2" style="background-color: #fde2e2;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-1-#feead2" style="background-color: #feead2;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-2-#d9f5d6" style="background-color: #d9f5d6;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-3-#d5f6d2" style="background-color: #d5f6d2;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-4-#e1eaff" style="background-color: #e1eaff;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-5-#e0e2fa" style="background-color: #e0e2fa;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-6-#eff0f1" style="background-color: #eff0f1;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-7-#fbbfbc" style="background-color: #fbbfbc;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-8-#fed4a4" style="background-color: #fed4a4;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-9-#b7edb1" style="background-color: #b7edb1;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-10-#a9efe6" style="background-color: #a9efe6;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-11-#bacefd" style="background-color: #bacefd;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-12-#b4b9f3" style="background-color: #b4b9f3;"></span>
-        </div>
-        <div class="back-color-wrapper">
-          <span class="back-color" data-info="back-13-#dee0e3" style="background-color: #dee0e3;"></span>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <style scoped>
@@ -383,11 +337,21 @@ a {
   background-color: transparent;
   padding: 0 2px;
 }
+.color-picker-wrap {
+  position: relative;
+  width: 0px;
+  height: 0px;
+}
 .color-picker {
-  width: 200px;
-  margin: 5px;
+  position: absolute;
+  top: 10px;
+  width: 204px;
+  height: 164px;
+  background-color: #fff;
   border-radius: 5px;
+  border: 1px solid #ccc;
   text-align: left;
+  padding: 8px;
   .color-picker-title {
     font-size: 14px;
     padding: 5px 0;
@@ -396,7 +360,7 @@ a {
   .back-colors {
     display: flex;
     flex-wrap: wrap;
-    // justify-content: space-around;
+    justify-content: space-around;
   }
   .back-color-wrapper,
   .text-color-wrapper {
@@ -420,5 +384,20 @@ a {
     height: 100%;
     text-align: center;
   }
+}
+.button-wrap {
+  width: 100%;
+  top: 192px;
+  position: absolute;
+}
+.color_reset {
+  width: 178px;
+  height: 28px;
+  background-color: transparent;
+  outline: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  position: absolute;
+  left: 12%;
 }
 </style>

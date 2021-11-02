@@ -1,0 +1,77 @@
+.color-marker {
+    background-color: transparent;
+    padding: 0 2px;
+}
+
+.color-picker-wrap {
+    position: relative;
+    width: 0px;
+    height: 0px;
+}
+
+.color-picker {
+    position: absolute;
+    top: 10px;
+    width: 204px;
+    height: 164px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: left;
+    padding: 8px;
+}
+
+.color-picker .color-picker-title {
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+.color-picker .text-colors,
+.color-picker .back-colors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.color-picker .back-color-wrapper,
+.color-picker .text-color-wrapper {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    margin: 0 5px 5px 0;
+}
+
+.color-picker .back-color-wrapper.active,
+.color-picker .text-color-wrapper.active {
+    border: 1px solid red;
+}
+
+.color-picker .text-color,
+.color-picker .back-color {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.button-wrap {
+    width: 100%;
+    top: 192px;
+    position: absolute;
+}
+
+.color_reset {
+    width: 178px;
+    height: 28px;
+    background-color: transparent;
+    outline: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    position: absolute;
+    left: 12%;
+}
