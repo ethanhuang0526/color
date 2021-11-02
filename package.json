@@ -12,6 +12,17 @@
         "email": "yu2436@live.cn"
     },
     "description": "Color Tool for Editor.js",
+    "keywords": [
+        "color editor",
+        "color",
+        "font",
+        "background",
+        "background-color",
+        "tool",
+        "inlinetool",
+        "editor.js",
+        "editorjs"
+      ],
     "license": "MIT",
     "dependencies": {
         "@editorjs/editorjs": "^2.22.2",
