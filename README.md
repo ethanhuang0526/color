@@ -6,7 +6,7 @@ file in /src/color
 ### Install via NPM
 Get the package
 ```shell
-$ npm i --save-dev editorjs-inline-color
+$ npm i --save editorjs-inline-color
 ```
 
 Include module at your application

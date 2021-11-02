@@ -244,4 +244,3 @@ export default class ColorTool {
 
 
 }
-module.exports = ColorTool;
