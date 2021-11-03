@@ -4,7 +4,8 @@ import Header from '@editorjs/header';
 import List from '@editorjs/list';
 
 import { ref, onMounted } from 'vue'
-import  ColorTool  from '../../dist/bundle.js';
+// import  ColorTool  from '../../dist/bundle.js';
+import  ColorTool  from '../index.js';
 
 function insertAfter(newElement, targetElement) {
   var parent = targetElement.parentNode;
@@ -290,7 +291,7 @@ onMounted(async () => {
     },
     data: {
       blocks: [{
-        data: { text: '0123456789abcdefghijklmnopqrstuvwxyz' },
+        data: { text: '01234567<span class="color-marker" style="background-color: rgb(253, 226, 226);">89a</span>bcdefghijklmnopqrstuvwxyz' },
         id: "6lQ5zE_VlU",
         type: "paragraph"
       }],
@@ -332,72 +333,4 @@ a {
   border-radius: 10px;
 }
 </style>
-<style lang="less">
-.color-marker {
-  background-color: transparent;
-  padding: 0 2px;
-}
-.color-picker-wrap {
-  position: relative;
-  width: 0px;
-  height: 0px;
-}
-.color-picker {
-  position: absolute;
-  top: 10px;
-  width: 204px;
-  height: 164px;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  text-align: left;
-  padding: 8px;
-  .color-picker-title {
-    font-size: 14px;
-    padding: 5px 0;
-  }
-  .text-colors,
-  .back-colors {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-  }
-  .back-color-wrapper,
-  .text-color-wrapper {
-    width: 22px;
-    height: 22px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    margin: 0 5px 5px 0;
-    &.active {
-      border: 1px solid red;
-    }
-  }
-  .text-color,
-  .back-color {
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-  }
-}
-.button-wrap {
-  width: 100%;
-  top: 192px;
-  position: absolute;
-}
-.color_reset {
-  width: 178px;
-  height: 28px;
-  background-color: transparent;
-  outline: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  position: absolute;
-  left: 12%;
-}
-</style>
+

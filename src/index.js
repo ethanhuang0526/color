@@ -35,7 +35,7 @@ export default class ColorTool {
 
     set state(state) {
         this._state = state;
-
+        console.log('change state');
         this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
     }
 
@@ -57,9 +57,6 @@ export default class ColorTool {
 
     }
 
-
-
-
     render() {
         // console.log(1, 'render');
         this.button = document.createElement('button');
@@ -74,14 +71,11 @@ export default class ColorTool {
         this.picker = document.createElement('div');
         // this.picker.classList.add('color-picker')
         this.picker.innerHTML = this.generateTemplate()
-
         this.reset = document.createElement('div');
         this.reset.innerHTML = `<div class="button-wrap"> <button class="color_reset">reset</button>`
-
         this.pannel.appendChild(this.picker)
         this.pannel.appendChild(this.reset)
-            // this.picker.hidden = true;
-
+        // this.picker.hidden = true;
         return this.pannel;
     }
     generateTemplate() {
@@ -135,26 +129,29 @@ export default class ColorTool {
         this.showPannel = true;
         this.range = range;
         this.selectedText = this.range.toString()
-            // if (this.state) {
-            //   // this.unwrap(range);
-            // } else {
-            //   this.wrap(range);
-            // }
-            // this.picker.hidden = false;
-            // this.wrap(range);
+        // if (this.state) {
+        //   // this.unwrap(range);
+        // } else {
+        //   this.wrap(range);
+        // }
+        // this.picker.hidden = false;
+        // this.wrap(range);
     }
 
     clear() {
-            // console.log('clear');
-            this.showPannel = false;
-            this.range = null;
-            this.uniMark = false
-            this.olderNode = null
-        }
-        // showActions(mark) {
+        // console.log('clear');
+        this.showPannel = false;
+        this.range = null;
+        this.uniMark = false
+        this.olderNode = null
+        this.mark = null
+    }
+    // showActions(mark) {
     showActions() {
         const mark = this.api.selection.findParentTag(this.tag, this.class);
+        console.log(mark);
         this.state = !!mark;
+        this.mark = mark
 
         // console.log('showActions');
         this.reset.addEventListener('click', (e) => {
@@ -163,16 +160,16 @@ export default class ColorTool {
         this.picker.addEventListener('click', (e) => {
             // console.log(e.target.dataset.info);
             if (!e.target.dataset.info) {
+                console.log('非按钮提前退出');
                 return
-              }
-              let [type, order, color] = (e.target.dataset.info).split('-')
+            }
+            let [type, order, color] = (e.target.dataset.info).split('-')
             let dom
             if (this.uniMark === true) {
                 // console.log('相同节点');
                 dom = this.olderNode
             } else {
                 dom = this.wrap(this.range)
-                this.olderNode = dom
             }
             if (type === 'text') {
                 dom.style.color = color
@@ -185,62 +182,92 @@ export default class ColorTool {
     hideActions() {
         // console.log('hideActions');
         //todo 非同一引用
-        this.picker.removeEventListener('click', () => {})
-        this.reset.removeEventListener('click', () => {})
+        this.picker.removeEventListener('click', () => { })
+        this.reset.removeEventListener('click', () => { })
         this.pannel.hidden = true;
         // this.mark = null
     }
 
 
     wrap(range) {
-        // console.log('wrap');
+        console.log(range);
+        const mark = this.mark
+        let { startContainer, endContainer, startOffset, endOffset, commonAncestorContainer } = range
         let seletedText = document.createTextNode(this.range.toString())
         let spanNode = document.createElement(this.tag);
-        spanNode.appendChild(seletedText)
         spanNode.classList.add(this.class);
         this.uniMark = true
-            // const mark = spanNode;
-        const selectedFrag = range.extractContents();
-        range.insertNode(spanNode);
-        // this.api.selection.expandToTag(mark);
-        return spanNode
-    }
-
-    unwrap(range) {
-        // debugger
-        const mark = this.api.selection.findParentTag(this.tag, this.class)
-            // console.log('unwrap', range, { mark });
-        let seletedText = document.createTextNode(this.range.toString())
-        let { startContainer, endContainer, startOffset, endOffset } = range
+        this.olderNode = spanNode
+        spanNode.appendChild(seletedText)
         if (endContainer.parentElement === startContainer.parentElement && endContainer.parentElement === mark) {
-            // console.log('被包裹的情况');
-            if (endContainer.length == endOffset && startOffset == 0) {
-                range.extractContents();
-                mark && mark.remove()
-                range.insertNode(seletedText)
-            }
+            console.log('range 被包裹的情况');
             let clonedSpan = mark.cloneNode()
             let beforeText = startContainer.textContent.slice(0, startOffset)
             let afterText = endContainer.textContent.slice(endOffset)
-                // console.log(beforeText, afterText);
+            mark.innerText = beforeText
+            clonedSpan.innerText = afterText
+            insertAfter(clonedSpan, mark)
+            insertBefore(spanNode, clonedSpan)
+            // 抽象了全选的情况
+            if (startOffset === 0) {
+                mark && mark.remove()
+            }
+            if (endOffset === endContainer.length) {
+                clonedSpan.remove()
+            }
+            range.extractContents();
+
+        } else {
+            const selectedFrag = range.extractContents();
+            range.insertNode(spanNode);
+            this.removeEmptySpan(commonAncestorContainer)
+        }
+        return spanNode
+
+    }
+
+    unwrap(range) {
+        // const mark = this.api.selection.findParentTag(this.tag, this.class)
+        let mark = this.mark
+        console.log({ mark });
+        let seletedText = document.createTextNode(this.range.toString())
+        let { startContainer, endContainer, startOffset, endOffset, commonAncestorContainer } = range
+        // range 被包裹的情况
+        if (endContainer.parentElement === startContainer.parentElement && endContainer.parentElement === mark && startContainer.parentElement === mark) {
+            let clonedSpan = mark.cloneNode()
+            let beforeText = startContainer.textContent.slice(0, startOffset)
+            let afterText = endContainer.textContent.slice(endOffset)
             mark.innerText = beforeText
             clonedSpan.innerText = afterText
             insertAfter(clonedSpan, mark)
             insertBefore(seletedText, clonedSpan)
+            // 抽象了全选的情况
+            startOffset === 0 && mark && mark.remove()
+            endOffset === endContainer.length && clonedSpan.remove()
             range.extractContents();
+            
         } else {
-
             range.extractContents();
             // mark&&mark.remove()
             range.insertNode(seletedText)
+            this.removeEmptySpan(commonAncestorContainer)
         }
-
-
-
-
-
     }
 
-
-
+    removeEmptySpan(container){
+        let htmlCollection = container.children
+        console.log(htmlCollection);
+        let arr = []
+        for (const key in htmlCollection) {
+            if (Object.hasOwnProperty.call(htmlCollection, key)) {
+                const element = htmlCollection[key];
+                if (element.textContent === '') {
+                    arr.push(element)
+                }
+            }
+        }
+        arr.forEach(i=>{
+            i.remove()
+        })
+    }
 }
